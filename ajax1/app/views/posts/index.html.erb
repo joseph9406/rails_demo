@@ -1,0 +1,20 @@
+<%= form_for Post.new, :remote => true do |f| %>
+  <!--
+    form-group 用於包裝表單元素, 當表單元素需要與其標籤(label)一起顯示時，
+    可以使用 form-group 類將它們包裝在一起, 可以幫助調整表單元素的垂直間距，使其外觀更加美觀。
+    form-control 它將添加樣式，使其填滿其父元素，並在瀏覽器中呈現一致的外觀。
+    常用於 input、textarea、select 等表單元素，以提高表單的使用體驗。
+  -->
+  <div class="form-group my-3">
+    <%= f.text_area :content, :class => "form-control" %>
+  </div>
+  <div class="form-group my-3">
+    <%= f.submit :class => "btn btn-primary" %>
+  </div>
+<% end %>
+
+<div id="post-list">
+  <% @posts.each do |post| %>
+    <%= render :partial => "post", :locals => { :post => post }%>
+  <% end %>
+</div>

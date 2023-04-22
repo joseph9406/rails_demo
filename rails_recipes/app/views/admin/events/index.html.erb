@@ -1,0 +1,85 @@
+<h1><%= t("admin event list", :scope => :admin) %></h1>
+
+<p class="text-right">
+  <%= link_to t("new event"), new_admin_event_path, :class => "btn btn-primary" %>
+</p>
+
+<%= form_tag bulk_update_admin_events_path, :class => "form-inline" do %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th><%= check_box_tag "全選", "1", false, :id => "toggle_all" %></th>
+        <th>Event Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody class="sortable">
+      <% @events.each do |event| %>     
+        <tr data-reorder-url="<%= reorder_admin_event_path(event) %>">
+          <!--
+            生成 <input id="ids_" name='ids[]' type='checkbox' value='id'>
+            ids[] 是该 check_box 元素的名称，它使用了一个数组命名，表示可以选择多个值。
+            在 Ruby on Rails 中，当表单中存在多个同名的输入元素时，它们的值会自动组成一个数组，
+            因此使用 ids[] 可以方便地在控制器（Controller）中处理多个值。
+            在这个例子中，选中的 event.id 值会被添加到名为 ids[] 的参数中，并随表单一起提交到服务器，以供进一步处理。
+          -->
+          <td><%= check_box_tag "ids[]", event.id %></td>
+
+          <td>
+            <span class="sortable_icon">☰</span>
+            <%= link_to event.name, admin_event_path(event) %>
+          </td>
+
+          <td>
+            <%= link_to "上移", reorder_admin_event_path(event, :position => :up), :method => :post, :class => "btn btn-default" %>
+            <%= link_to "下移", reorder_admin_event_path(event, :position => :down), :method => :post, :class => "btn btn-default" %>
+            <%= link_to "置頂", reorder_admin_event_path(event, :position => :first), :method => :post, :class => "btn btn-default" %>
+            <%= link_to "置底", reorder_admin_event_path(event, :position => :last), :method => :post, :class => "btn btn-default" %>
+            <%= link_to t("registrations"), admin_event_registrations_path(event), :class => "btn btn-default" %>
+            <%= link_to t("tickets"), admin_event_tickets_path(event), :class => "btn btn-default" %>
+            <%= link_to t("edit"), edit_admin_event_path(event), :class => "btn btn-outline-dark" %>
+            <%= link_to t("delete"), admin_event_path(event), :method => :delete, :data => { :confirm => "Are you sure?" }, :class => "btn btn-danger" %>
+          </td>  
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+ 
+  <p>
+    <%= select_tag :event_status, options_for_select( Event::STATUS.map{ |s| [t(s, :scope => + "event.status"), s] }), :class => "form-control" %>
+    <%= submit_tag t(:bulk_update), :class => "btn btn-primary" %>
+    <%= submit_tag t(:bulk_delete), :class => "btn btn-danger", :data => { :confirm => "Are you + sure?" } %>
+  </p>
+<% end %>
+
+<script>
+  // 這個 javascript 會綁事件在 #toggle_all 核選方塊上，來做全選效果
+  $("#toggle_all").click(function(){
+    if ( $(this).prop("checked") ) {
+      $("input[name='ids[]']").prop("checked", true);
+    } else {
+      $("input[name='ids[]']").prop("checked", false);
+    }
+  })
+
+  $(".sortable").sortable({
+    axis: 'y',       // 限制只能上下拖拉
+    items: 'tr',     // 拖拉整個 tr
+    cursor: 'move',  // 變更拖拉時的 icon
+    handle: ".sortable_icon",  // 限制只有點 ☰ 才能開始拖拉，砍掉這行的話，會是整個 tr 都可以進行拖拉，你可以試試看
+    stop: function(e, ui){     // 當拖拉結束時，會調用這個方法
+      ui.item.children('td').effect('highlight', {}, 1000)
+    },
+    update: function(e, ui) {   // 當拖拉結束並且 DOM 上的位置變更時，會調用這個方法
+      reorder_url = ui.item.data('reorder-url')
+      position = ui.item.index()  // 取得順序
+      $.ajax({
+       type: 'POST',
+       url: reorder_url,
+       dataType: 'json',
+       data: { position: position }
+      })
+    }
+  });
+
+</script>

@@ -1,0 +1,2 @@
+class GroupHostsController < ApplicationController
+end

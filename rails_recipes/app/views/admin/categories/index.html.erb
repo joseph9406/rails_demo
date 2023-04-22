@@ -1,0 +1,14 @@
+<h1>category list</h1>
+
+<%= link_to "create", new_admin_category_path, :class => "btn btn-primary" %>
+
+<ul>
+<% @categories.each do |c| %>
+  <li>
+    <%= c.name %>    
+    <%= link_to t("delete"), admin_category_path(c), :method => :delete, :data => { :confirm => "Are you sure?" } %>
+  </li>
+<% end %>
+</ul>
+
+

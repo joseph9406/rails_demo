@@ -1,0 +1,22 @@
+<div id="post-<%= post.id %>" class="card my-3">
+  <div class="card-header">
+    <%= post.user.display_name %>
+  </div>
+
+  <div class="card-body">  
+    <span id="post-thumbsup-<%= post.id %>" class="badge bg-success"><%= post.likes.count %> 👍</span>
+    <%= post.content %>
+
+    <div class="text-end">  
+      <span id="post-like-<%= post.id %>">
+        <%= render :partial => "like", :locals => { :post => post } %>
+      </span>
+
+      <% if current_user && post.user == current_user %>          
+        <%= link_to "delete", post_path(post), :method => :delete, :remote => true, :class => "btn btn-danger" %>                  
+      <% end %>
+    </div>
+
+  </div>  
+
+</div>

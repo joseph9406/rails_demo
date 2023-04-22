@@ -1,0 +1,44 @@
+zh-CN:
+  hello: "親愛的, %{name} 你好:"
+  welcome: 歡迎頁
+  event list: 活動列表
+  new event: 新增活動
+  create: 新增
+  edit: 編輯
+  update: 修改
+  delete: 刪除
+  cancel: 取消  
+  submit: 執行
+  back to previous page: 回上一頁
+  back to events list: 回到活動列表   
+  Locale: 語言
+  edit user: 修改個人資料
+  event:
+    status:
+      draft: 草稿
+      public: 公開
+      private: 私密  
+  tickets: 票種
+  bulk_update: 批次編輯
+  bulk_delete: 批次刪除
+  registrations: 註冊
+  registration: 
+    status:
+      pending: 報名尚未完成
+      confirmed: 報名成功
+      
+  user:
+    role: 
+      admin: 超級管理員
+      editor: 活動管理員    
+      
+  admin:
+    admin_event_list: 活動列表管理    
+    new_event: 新增活動   
+    select_a_category: 請選擇一個分類
+    admin_users: 使用者管理
+    id: ID
+    email: 電郵地址
+    action: 操作
+    admin_users: 活動管理
+    edit_user: 編輯用戶

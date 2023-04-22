@@ -1,0 +1,6 @@
+zh-CN:
+  hello: "親～ %{name} 你好："
+  Locale: 語言
+  event_list: 活動列表
+  admin:
+    event_list: 活動列表管理

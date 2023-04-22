@@ -1,0 +1,96 @@
+<% if @event.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@event.errors.count, "error") %> prohibited this person from being saved:</h2>
+
+    <ul>
+    <% @event.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="form-group">
+  <%= f.label :name %>
+  <%= f.text_field :name, :class => "form-control" %>
+</div>
+
+<div class="form-group">
+  <%= f.label :description %>
+  <%= f.cktext_area :description, :ckeditor => {:toolbar => 'Full',language: 'zh-CN'} %>
+</div>
+
+<div class="form-group my-3">
+  <%= f.label :status, "Status: " %>
+
+  <!-- 下拉選單
+  <%= f.select :status, 
+        # selected: f.object.status || nil 表示帶出該筆記錄當前的值,若當前沒有值,就設為nil
+        options_for_select(Event::STATUS.map{ |s| [t(s, :scope => "event.status"), s] }, selected: f.object.status || nil ), 
+        { include_blank: 'Select a status' }, 
+        class: "form-control"  %>
+  -->
+
+  <!-- Radio Button UI
+  <% Event::STATUS.each do |status| %>
+    <label>  
+      <%= f.radio_button :status, status %>
+      <%= t(status, :scope => "event.status") %>
+    </label>
+  <% end %>
+  -->
+
+  <!-- Radio button 美化版-->
+  <div class="btn-group" data-toggle="buttons">
+    <% Event::STATUS.each do |status| %>
+      <label class="btn btn-default <%= (status == f.object.status)? 'active' : '' %>">
+        <%= f.radio_button :status, status %>
+        <%= t(status, :scope => "event.status") %>
+      </label>
+    <% end %>
+  </div>   
+
+</div>
+
+<!-- Category 下拉選單 -->
+<div class="form-group my-3">
+  <%= f.label :category_id %>
+  <%= f.select :category_id, 
+    options_for_select(Category.all.map{ |c| [c.name, c.id] }, selected: f.object.category_id || nil), 
+    { include_blank: t('select a category', :scope => :admin) }, 
+    :class => "form-control" %>
+</div> 
+
+<!-- Ticket 表單 -->
+<%= #f.fields_for :tickets do |ff|  
+  f.nested_fields_for :tickets do |ff| 
+%>
+  <fieldset style="border-left: 5px solid #bbb; margin-bottom: 10px; padding: 10px;">
+    <legend>Ticket</legend>
+    <div class="form-group">
+      <%= ff.label :name %>
+      <%= ff.text_field :name, :class => "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= ff.label :price %>
+      <%= ff.number_field :price, :class => "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= ff.label :description %>
+      <%= ff.text_area :description, :class => "form-control" %>
+    </div>
+  </fieldset>
+  <%= ff.remove_nested_fields_link "移除這個票種", :class => "btn btn-danger" %>
+<% end %>
+
+<p class="text-right">
+  <%= f.add_nested_fields_link :tickets, "新增票種", :class => "btn btn-default" %>
+</p>
+
+
+<script>
+  $("#event_category_id").select2( { theme: "bootstrap"} );
+</script>
+

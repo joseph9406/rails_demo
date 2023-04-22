@@ -1,0 +1,27 @@
+<p>
+  <a id="my-toggle-click">Toggle</a>
+</p>
+
+<div id="foo" style="border: 1px solid red;">
+  <p>bar</p>
+</div>
+
+<script>
+  /* 移過去會有開關的效果, 在 jQuery 3.0 版本之后，toggle() 方法已经被移除了
+  $("#foo").hide();   // 先馬上藏起來
+
+  $("#my-toggle-click").hover(function(){
+    $("#foo").toggle();    
+  })
+  */
+
+  $("#foo").hide(); 
+
+  $("#my-toggle-click").hover(function(){
+    if ($("#foo").is(":hidden")) {
+      $("#foo").show();
+    } else {
+      $("#foo").hide();
+    }
+  })
+</script>

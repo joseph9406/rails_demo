@@ -1,0 +1,163 @@
+<%= form_for Post.new, :url => posts_path do |f| %>
+  <!--
+    form-group 用於包裝表單元素, 當表單元素需要與其標籤(label)一起顯示時，
+    可以使用 form-group 類將它們包裝在一起, 可以幫助調整表單元素的垂直間距，使其外觀更加美觀。
+    form-control 它將添加樣式，使其填滿其父元素，並在瀏覽器中呈現一致的外觀。
+    常用於 input、textarea、select 等表單元素，以提高表單的使用體驗。
+  -->
+  <div class="form-group my-3">
+    <%= f.text_area :content, :class => "form-control" %>
+  </div>
+  <div class="form-group my-3">
+    <%= f.submit :class => "btn btn-primary" %>
+  </div>
+<% end %>
+
+<div id="post-list">
+  <% @posts.each do |post| %>
+    <%= render :partial => "post", :locals => { :post => post }%>
+  <% end %>
+</div>
+
+
+<script>
+
+  // ***** 4-2 把刪除改成自行綁事件 *****  
+  //$(".delete-post").click(function(evt){   // 瀏覽器並不會為新增的元素自動綁定事件上去。所以後來 Ajax 新增上去的貼文是沒有事件的。 
+  $("#post-list").on("click", ".delete-post", function(evt){
+    // `evt`是瀏覽器的事件物件，它代表著當前被觸發的事件。
+    // evt.preventDefault(); 會終止這個元素的預設行為：
+    // 超連結 a 的預設行為是跳到下一頁，如果沒有這行的話，送出 ajax 後會跳去 show page   
+    evt.preventDefault();
+    // this 是個特別的變數，代表觸發事件的元素。使用 attr 讀取元素的屬性，這裡要拿到超連結的網址
+    var url = $(this).attr("href"); 
+    var that = this;  //既然已經知道是哪一個元素被點擊了,就把該元素保留起來,到時拿出來用,就不必用id定位了。
+    
+    $.ajax({
+       // 從 url 和 method 可得知要連接到控制器的 destroy 而不是 show, 
+       // 不過要先有 evt.preventDefault(); 不然,早就跳去show了。
+      url: url,
+      method: 'delete',   // method: 'delete' 是把參數加在url後面,以get的方式傳給服務,所以不需要 data 參數
+      //dataType: 'script' // 要求伺服器回傳 javascript
+      dataType: 'json', // 要求伺服器回傳 json
+      success: function(data){   // data 就是伺服器回傳的 JSON 資料            
+        $("#post-" + data["id"]).remove();
+        //$(that).closest(".card").remove();         
+      }
+    })
+  })
+
+  // ***** ajax 新增事件 *****
+  $(document).on('submit', 'form#new_post', function(e){
+    e.preventDefault();
+    var form = $(this);
+    var url = form.attr("action");
+    var method = form.attr("method");    // method: "post", 是通過form 把數據傳給服務器,所以需要下列的data參。
+    // 把表單的數據轉換成可提交的格式，
+    //表單控制項的名稱和值會被轉換為以下格式：name1=value1&name2=value2&name3=value3...。
+    //這樣的格式可以被作為請求的參數提交到後端，後端可以通過解析這個參數字符串來獲取表單數據。
+    var data = form.serialize(); 
+    
+    $.ajax({
+      url: url,
+      method: method,
+      data: data,       // 要傳給伺服器的資料,要配合上述的 form.serialize()
+      dataType: 'json',
+      success: function(response){
+        if (response.post) {          
+          $("#post-list").prepend(response.post);          
+          $("#post_content").val("");
+        } else {
+          alert("貼文失敗！");
+        }    
+      },
+      error: function(jqXHR, textStatus, errorThrown) {    
+        var errors = $.parseJSON(jqXHR.responseText).errors;    
+        alert(errors.join(", "));  
+      }
+
+    });
+  })
+ 
+
+  // ***** 4-3 貼文無限捲軸 *****  
+  var current_post_id = <%= @posts.last.id %>;    // 記下目前畫面最小的貼文 ID
+
+  // 當捲軸動的時候，會觸發這個事件
+  $(window).scroll(function(){        
+    // 當捲到最下面的時候
+    //if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {  
+    if($(window).scrollTop() + $(window).height() + 2 >= $(document).height()) {  // 不是很敏感,經常判斷不到觸底事件發。加2的作用是要確保 ">=" 一定要成立      
+      var url = "/posts?max_id=" + current_post_id;
+      if(url){
+        $.ajax({
+            method: "GET",
+            url: url,
+            dataType: "script"
+        })
+      } else {
+        console.log("data ended");
+      }
+    }
+  })
+
+  // ***** 4-4 使用核選方塊(checkbox)做開關 *****
+  //$(".toggle-flag").on("change",function(){   
+  $("#post-list").on('change', ".toggle-flag", function(){   // change 是事件名稱 ，表示輸入框有變動的話，就會觸發。
+    var url = $(this).data("url");
+    var that = this
+
+    $.ajax({
+      url: url,
+      method: "POST",
+      dataType: "json",
+      success: function(data){
+        if ( data["flag_at"] ) {
+          //$("#post-flag-" + data["id"]).html(data["flag_at"]);
+          $(that).closest("label").find("span").html(data["flag_at"]);  // ***** 4-6 使用 jQuery Traversing 走訪元素 *****
+        } else {
+          //$("#post-flag-" + data["id"]).html("");
+          $(that).closest("label").find("span").html("");    // ***** 4-6 使用 jQuery Traversing 走訪元素 *****
+        }
+      }
+    });
+  });
+
+  // ***** 4-7 使用下拉選單(select)分類貼文 *****
+  $("#post-list").on('change', ".select_category", function(){
+     var url = $(this).data("url");
+
+    $.ajax({
+      url: url,
+      method: "PATCH",
+      dataType: "json",
+      data: {    // data 是要傳遞給服務器的參數
+        post: {
+          category_id: $(this).val()
+        }
+      }
+    });
+  });
+  
+  // ***** 4-9 jQuery Plugin 整合示範 *****
+  //$(".raty").raty( { path: '/images/' } );
+
+  // ***** 4-10 jQuery Plugin 整合示範 *****
+  $(".raty").raty({ 
+      path: '/images/',   // 指定圖片的路徑，該路徑用於從外掛程式中加載星星的圖像。      
+      score: function() { return $(this).data('score'); },   // score 選項是一個回調函數，從元素的 data-score 屬性中獲取每個元素的分數。
+      click: function(score) {
+        var that = this;
+        $.ajax({
+          url: $(this).data("score-url"),
+          method: "POST",
+          data: { score: score },
+          dataType: "json",
+          success: function(data){
+            $(that).closest(".card-body").find(".average-score").html( data["average_score"] );
+          }
+        })
+      }
+  });
+
+</script>

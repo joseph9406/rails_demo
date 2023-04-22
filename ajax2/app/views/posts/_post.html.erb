@@ -1,0 +1,41 @@
+<div id="post-<%= post.id %>" class="card my-3">
+  <div class="card-header">
+    <%= post.user.display_name %>
+  </div>
+
+  <div class="card-body">  
+    <span id="post-thumbsup-<%= post.id %>" class="badge bg-success"><%= post.likes.count %> 👍</span>    
+    <span class="average-score"><%= post.average_score %></span>
+    <div class="raty" data-score="<%= post.find_score(current_user).try(:score) || 0 %>" data-score-url="<%= rate_post_path(post) %>"></div>
+    <%= post.content %>
+
+    <div class="text-end">  
+      <span id="post-like-<%= post.id %>">
+        <%= render :partial => "like", :locals => { :post => post } %>
+      </span>
+
+      <% if current_user && post.user == current_user %>    
+         <!--這裏':method => :delete' 刪除了,因為在後面的jquery裏的ajax參數裏可以找到 method: delete-->        
+        <%= link_to "delete", post_path(post), :class => "delete-post btn btn-danger" %>                  
+      <% end %>
+    </div>
+
+  </div>  
+
+  <div class="card-footer">
+    <% if current_user && current_user.is_admin? %>
+      <%= select_tag "category_id[#{post.id}]", 
+                options_for_select(Category.all.map{ |x| [x.name, x.id]}, post.category_id), 
+                :data => { :url => post_path(post) }, 
+                :prompt => "請選擇分類", 
+                :class => "select_category" %>
+                
+      <label>
+        <%= check_box_tag "mark_flag[#{post.id}]", 1, post.flag_at.present?,
+            :data => { :url => toggle_flag_post_path(post) }, :class => "toggle-flag" %> 標記為垃圾
+        <span id="post-flag-<%= post.id %>"><%= post.flag_at %></span>
+      </label>
+    <% end %>
+  </div>
+
+</div>

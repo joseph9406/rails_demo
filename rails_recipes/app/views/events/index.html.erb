@@ -1,0 +1,10 @@
+<h1><%= t("event list") %></h1>
+
+<ul>
+  <% @events.each do |event| %>
+    <li>
+      <!-- to_s(:default) 就算是 default預設值,也要明示的指定-->
+      <%= link_to event.name, event_path(event) %> <%= event.created_at.to_s(:default) %>
+    </li>
+  <% end %>
+</ul>

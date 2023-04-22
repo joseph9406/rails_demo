@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RailsRecipes</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= #stylesheet_link_tag "application", "data-turbo-track": "reload" 
+    %>
+    <%= stylesheet_link_tag 'admin', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= #javascript_include_tag "application" 
+    %>
+    <%= javascript_include_tag 'admin' %>
+
+  </head>
+
+  <body>
+    <div class="container-fluid"> <!-- "mx-5" 對 "container-fluid" 沒作用-->
+      <!-- "navbar-expand-lg" 当屏幕尺寸达到 lg（大于等于 992 像素）时，导航栏将橫向扩展为全屏幕。-->
+      <!-- <nav class="navbar navbar-default"> bs5中,"navbar-default"已被.navbar-light和.navbar-dark類別取代-->
+      <!-- <nav class="navbar navbar-inverse navbar-fixed-top"> "navbar-inverse","navbar-fixed-top"在bs5中已刪除 -->
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top mx-3">     
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="/">全栈营 Rails Recipes 後台</a>
+
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav">
+            <% if current_user %>              
+              <% if current_user.is_editor? %>
+                <li class="active"> <%= link_to '活動管理', admin_events_path, :class => "nav-link" %> </li>
+              <% end %>              
+              <% if current_user.is_admin? %>
+                <li> <%= link_to '用戶管理', admin_users_path, class: "nav-link" %> </li>
+              <% end %>
+            <% end %>
+          </ul>               
+   
+          <ul class="nav navbar-nav ms-auto mx-5">
+            <% if current_user %>
+              <li class="nav-item dropdown">              
+                <a href="#" class="dropdown-toggle text-light" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <span class="glyphicon glyphicon-user"></span>                  
+                    <%= current_user.display_name %>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><%= link_to '維護活動分類', admin_categories_path, :class => "dropdown-item text-dark" %></li>
+                  <li><%= link_to '修改密碼', edit_registration_path(:user), :class => "dropdown-item text-dark" %></li>
+                  <li><%= link_to '登出', destroy_user_session_path, :method => :delete, :class => "dropdown-item text-dark" %></li>                       
+                </ul>
+              </li>
+            <% else %>
+              <li><%= link_to '註冊', new_registration_path(:user), :class => "dropdown-item text-dark" %></li>|
+              <li><%= link_to '登入', new_session_path(:user), :class => "dropdown-item text-dark" %></li>
+            <% end %>
+
+            <!-- 下列寫法是要導向到當前的controller和action,而不是某個指定的controller和action-->
+            <li class="nav-item dropdown mx-3 ">
+              <a href="#" class="dropdown-toggle text-light" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <span class="glyphicon glyphicon-user"></span>                  
+                <%= t( "Locale") %>
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">     
+                <li><%= link_to "中文版", { :controller => controller_name, :action => action_name, :locale => "zh-CN" }, class: "dropdown-item" %></li>
+                <li><%= link_to "English", { :controller => controller_name, :action => action_name, :locale => "en" }, :class => "dropdown-item" %></li>
+              </ul>
+            </li> 
+          </ul>
+        </div>
+
+      </nav>
+
+      
+    </div>    
+
+    <div style="margin-top: 5rem;"></div> <!--把下面的內容往下擠,讓內容不被遮蓋-->   
+
+    <div class="mx-3"> 
+      <% if notice %>
+        <p class="notice alert-success"><%= notice %></p>
+      <% end %>
+      <% if alert %>
+        <p class="alert alert-danger"><%= alert %></p>
+      <% end %>
+
+      <%= yield %>
+    </div>
+  </body>
+</html>

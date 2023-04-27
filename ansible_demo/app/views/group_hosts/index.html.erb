@@ -1,0 +1,40 @@
+
+<table class="table">
+  <thead>
+    <tr>
+    <th><%= check_box_tag "全選", "1", false, :id => "toggle_all" %></th>
+    <th><%= t("fqdn", :scope => "host") %></th>
+    <th><%= t("ip_address", :scope => "host") %></th>
+    <th><%= t("os_family", :scope => "host") %></th>
+    <th><%= t("group", :scope => "host") %></th>
+    <th><%= t("created_at", :scope => "host") %></th>
+    <th><%= t("updated_at", :scope => "host") %></th>    
+    <th><%= t("action") %></th>
+    </tr>
+  </thead>
+  <tbody id="group-list" class="sortable">
+    <!--
+    生成 <input id="ids_" name='ids[]' type='checkbox' value='id'>
+    ids[] 是该 check_box 元素的名称，它使用了一个数组命名，表示可以选择多个值。
+    在 Ruby on Rails 中，当表单中存在多个同名的输入元素时，它们的值会自动组成一个数组，
+    因此使用 ids[] 可以方便地在控制器（Controller）中处理多个值。
+    在这个例子中，选中的 event.id 值会被添加到名为 ids[] 的参数中，并随表单一起提交到服务器，以供进一步处理。
+    --> 
+    <% @hosts.each do |host| %>
+      <tr>        
+        <td><%= check_box_tag "ids[]", host.id, false,  class: 'host-checkbox', data: { id: host.id } %></td>
+        <td><%= link_to host.fqdn, host_path(host) %></td>
+        <td><%= host.ip_address %></td>
+        <td><%= host.os_family %></td>        
+        <td><%= host.group.name %></td> 
+        <td><%= host.created_at.to_s(:default) %></td>
+        <td><%= host.updated_at.to_s(:default) %></td>       
+        <td>   
+          <%= link_to t("edit"), "#", :class => "btn btn-sm btn-outline-dark" %>
+          <%= link_to t("delete"), "#", :method => :delete, :data => { :confirm => "Are you sure?" }, :class => "btn btn-sm btn-danger" %>
+        </td>  
+      </tr>
+    <% end %>
+   
+  </tbody>
+</table>

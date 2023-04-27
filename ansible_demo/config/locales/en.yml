@@ -32,3 +32,27 @@
 en:
   hello: "Hi %{name},"
   Locale: Language
+  create: Create
+  edit: Edit
+  destroy: Delete
+  show: Show
+  action: Action
+  submit: Submit
+  back to previous page: Back to Previous
+
+  created_at: Create Date
+  updated_at: Update Date
+  
+  groups: Groups
+  hosts: Hosts
+  group:
+    name: Group name
+    description: Description
+  
+  host:
+    fqdn: FQDN
+    ip_address: IP Address
+    os_family: OS Family
+    os_version: OS Version
+    group: Group
+    

@@ -62,6 +62,7 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  gem "faker"
 end
 
 group :test do
@@ -79,3 +80,4 @@ gem "sassc-rails"
 gem "devise"
 gem "devise-i18n" #提供 Devise 的 i18n 翻譯文件，以支援多語言使用者界面
 
+gem "kaminari"

@@ -1,0 +1,146 @@
+<%= form_for Group.new do |f| %>
+  <!--
+    form-group 用於包裝表單元素, 當表單元素需要與其標籤(label)一起顯示時，
+    可以使用 form-group 類將它們包裝在一起, 可以幫助調整表單元素的垂直間距，使其外觀更加美觀。
+    form-control 它將添加樣式，使其填滿其父元素，並在瀏覽器中呈現一致的外觀。
+    常用於 input、textarea、select 等表單元素，以提高表單的使用體驗。
+  -->
+  <div class="form-group my-3">
+    <%= f.label :name, t("name", :scope => "group") %>
+    <%= f.text_field :name %>
+
+    <%= f.label :description, t("description", :scope => "group") %>
+    <%= f.text_field :description %>
+
+    <%= f.submit t("create"), :class => "btn btn-primary" %>
+  </div>
+<% end %>
+
+
+<%= 
+  #form_tag hosts_groups_path, :method => :get do 
+  form_tag group_hosts_groups_path, :method => :get do 
+%>
+  <%= submit_tag "Go to hosts", class: "btn btn-primary btn-sm" %>
+  <table class="table mt-3">
+    <thead>
+      <tr>
+      <th><%= check_box_tag "全選", "1", false, :id => "toggle_all" %></th>
+      <th><%= t("name", :scope => "group") %></th>
+      <th><%= t("description", :scope => "group") %></th>
+      <th><%= t("action") %></th>
+      </tr>
+    </thead>
+    <tbody id="group-list" class="sortable">
+      <!--
+      生成 <input id="ids_" name='ids[]' type='checkbox' value='id'>
+      ids[] 是该 check_box 元素的名称，它使用了一个数组命名，表示可以选择多个值。
+      在 Ruby on Rails 中，当表单中存在多个同名的输入元素时，它们的值会自动组成一个数组，
+      因此使用 ids[] 可以方便地在控制器（Controller）中处理多个值。
+      在这个例子中，选中的 event.id 值会被添加到名为 ids[] 的参数中，并随表单一起提交到服务器，以供进一步处理。
+      --> 
+      <% @groups.each do |group| %>
+        <tr>
+          <!-- <td><%= check_box_tag "ids[]", group.id, session[:ids]&.include?(group.id) || false %></td> -->
+          <!-- 當多個 checkbox 元素具有相同的 name 屬性時，這些值將被捆綁成一個數組，並以這個 name 作為 key 進行傳送。所以在代碼中使用 group_ids[] 作為 checkbox 的 name 屬性。-->
+          <td><%= check_box_tag "group_ids[]", group.id, false, class: 'group-checkbox', data: { id: group.id } %></td>
+          
+          <td><%= group.name %></td>
+          <td><%= group.description %></td>
+          <td> 
+            <%= link_to t("edit"), edit_group_path(group), :class => "btn btn-outline-dark" %>
+            <%= link_to t("delete"), group_path(group), :method => :delete, :data => { :confirm => "Are you sure?" }, :class => "btn btn-danger" %>
+          </td>  
+        </tr>
+      <% end %>
+    
+    </tbody>
+  </table>
+
+<% end %>
+
+
+<%= paginate @groups %>
+<%= @test %>
+
+
+<script>
+  // ***** 以下 jQuery 是在翻頁時 checkbox 不被清除, 仍能保留 checkbox 的勾選狀態。
+  var selectAll = localStorage.getItem('selectAll') === 'true' || false;  
+  // JSON.parse( '{"name":"John","age":30}' ) 用於將JSON字符串轉成對象(hash)或數組 。** JSON 規範中要求使用雙引號 " 包裹屬性名稱和值。 
+  var selectedIds = JSON.parse(localStorage.getItem('selectedIds') || '[]');   
+  var selectedIds_set = new Set(selectedIds);   // 把 selectedIds 由數組轉成 Set 是為了 Set 增減內容的元素比數組方便。 
+
+  // 翻頁時,將checkbox重新渲染一遍。
+  selectedIds_set.forEach(function(id){  
+    $('.group-checkbox[data-id="' + id + '"]').prop('checked', true); 
+  }); 
+
+  $("#toggle_all").prop("checked", selectAll);
+
+  
+  //這個 javascript 會綁事件在 #toggle_all 核選方塊上，來做全選效果。
+  $("#toggle_all").click(function(){
+    localStorage.clear(); 
+    
+    if ( $(this).prop("checked") ) {  
+      localStorage.setItem("selectAll", "true");
+      $(".group-checkbox").prop("checked", true);
+      selectedIds_set = new Set(<%= Group.all.map(&:id) %>);      
+    } 
+    else {
+      localStorage.setItem("selectAll", "false");
+      $(".group-checkbox").prop("checked", false);      
+      selectedIds_set.clear();
+    }
+    localStorage.setItem('selectedIds', JSON.stringify([...selectedIds_set]));      
+  })
+  
+  $('.group-checkbox').change(function(){
+    // 把"全選"的勾選取消
+    $("#toggle_all").prop("checked", false);
+    localStorage.setItem("selectAll", "false");
+
+    if($(this).prop('checked')){
+      selectedIds_set.add($(this).data('id'));
+    }else{
+      selectedIds_set.delete($(this).data('id'));
+    }   
+    
+    localStorage.setItem('selectedIds', JSON.stringify([...selectedIds_set]));
+  });
+
+  /* 以下是舊代碼,不能work, 僅供參考
+    $('.group-checkbox').each(function() {
+
+      if($(this).prop('checked')){      
+        //alert( $(this).data('id').toString() + $(this).prop('checked').toString() );
+        alert($(this).data('id'));
+        selectedIds_set.add($(this).data('id'));
+      }else{      
+        selectedIds_set.delete($(this).data('id'));
+      }
+
+    });
+    */    
+
+    /*
+    $('.group-checkbox').on('change',function(){
+
+      $('.group-checkbox:checked').each(function() {
+        selectedIds.push($(this).val());
+      });
+      sessionStorage.setItem('selectedIds', JSON.stringify(selectedIds));
+
+
+      if($(this).prop('checked')){      
+        //alert( $(this).data('id').toString() + $(this).prop('checked').toString() );
+        selectedIds_set.add($(this).data('id'));
+      }else{      
+        selectedIds_set.delete($(this).data('id'));
+      }
+
+      alert("1.*** " + [...selectedIds_set]);
+    });
+  */
+</script>

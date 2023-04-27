@@ -19,6 +19,8 @@ module AnsibleDemo
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
     config.i18n.default_locale = "zh-CN"
-    
+    config.time_zone = "Taipei"
+    Time::DATE_FORMATS.merge!(:default => '%Y/%m/%d %I:%M %p', :ymd => '%Y/%m/%d')
+
   end
 end

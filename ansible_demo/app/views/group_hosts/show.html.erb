@@ -1,0 +1,13 @@
+
+
+<p><%= @host.fqdn %></p>
+<p><%= @host.ip_address %></p>
+<p><%= @host.os_family %></p>
+<p><%= @host.os_version %></p>
+<p><%= @host.group.name %></p>
+<p><%= @host.created_at %></p>
+<p><%= @host.updated_at %></p>
+
+<%= link_to t("back to previous page"), :back, :default => root_path, :class => "btn btn-outline-dark" %>
+
+

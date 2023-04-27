@@ -1,0 +1,7 @@
+<% if @group.valid? %>  
+  $("#group-list").prepend("<%= j render :partial => "group", :locals => { :group => @group } %>");
+  $("#group_name").val("");
+  $("#group_description").val("");
+<% else %>
+  alert("新增失敗 !");
+<% end %>

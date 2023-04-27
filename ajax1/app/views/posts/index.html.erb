@@ -6,11 +6,14 @@
     常用於 input、textarea、select 等表單元素，以提高表單的使用體驗。
   -->
   <div class="form-group my-3">
+    <%= f.label %>
     <%= f.text_area :content, :class => "form-control" %>
   </div>
+  
   <div class="form-group my-3">
     <%= f.submit :class => "btn btn-primary" %>
   </div>
+
 <% end %>
 
 <div id="post-list">

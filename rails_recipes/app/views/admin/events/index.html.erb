@@ -15,7 +15,7 @@
     </thead>
     <tbody class="sortable">
       <% @events.each do |event| %>     
-        <tr data-reorder-url="<%= reorder_admin_event_path(event) %>">
+        
           <!--
             生成 <input id="ids_" name='ids[]' type='checkbox' value='id'>
             ids[] 是该 check_box 元素的名称，它使用了一个数组命名，表示可以选择多个值。

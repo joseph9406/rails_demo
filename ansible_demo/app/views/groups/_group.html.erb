@@ -1,0 +1,12 @@
+<tr>
+  <!-- <td><%= check_box_tag "ids[]", group.id, session[:ids]&.include?(group.id) || false %></td> -->
+  <td><%= check_box_tag "ids[]", group.id, session[:ids].include?(group.id.to_s) %></td>
+  <td><%= link_to group.name %></td>
+  <td><%= group.description %></td>
+  <td>   
+    <%= session[:ids] %> 
+    <%= @test %>
+    <%= link_to t("edit"), edit_group_path(group), :class => "btn btn-outline-dark" %>
+    <%= link_to t("delete"), group_path(group), :method => :delete, :data => { :confirm => "Are you sure?" }, :class => "btn btn-danger" %>
+  </td>  
+</tr>

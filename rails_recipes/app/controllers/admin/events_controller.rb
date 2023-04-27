@@ -69,6 +69,7 @@ class Admin::EventsController < AdminController
         event.destroy
         total += 1
       end
+    end
   end
 
     flash[:alert] = "成功完成 #{total} 筆"

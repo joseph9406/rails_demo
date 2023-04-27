@@ -1,6 +1,29 @@
 zh-CN:
   hello: "親～ %{name} 你好："
   Locale: 語言
-  event_list: 活動列表
-  admin:
-    event_list: 活動列表管理
+  
+  create: 新增
+  edit: 編輯  
+  destroy: 刪除
+  show: 顯示  
+  action: 操作
+  submit: 確定
+  back to previous page: 返回前頁
+
+  created_at: 建立時間
+  updated_at: 修改時間
+  
+  groups: 群組
+  hosts: 主機
+  group: 
+    name: 群組名稱
+    description: 說明
+
+  host:
+    fqdn: 主機名稱
+    ip_address: IP位址
+    os_family: OS系列
+    os_version: OS版本
+    group: 群組
+
+  
